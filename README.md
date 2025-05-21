@@ -21,7 +21,7 @@ Sistema para la detección de contenido generado por Inteligencia Artificial en 
 
 2. Navega hasta la carpeta del proyecto
    ```
-   cd "IA Co."
+   cd Detector_de_IA
    ```
 
 3. Instala las dependencias necesarias
@@ -31,7 +31,7 @@ Sistema para la detección de contenido generado por Inteligencia Artificial en 
 
 ## Configuración
 
-1. Crea un archivo `.env` en la raíz del proyecto con la siguiente estructura (o modifica el existente):
+1. Navega al archivo `.env` en la raíz del proyecto. Esto es lo que encontraras.
    ```
    # Configuración del servidor
    PORT=3000
@@ -42,11 +42,22 @@ Sistema para la detección de contenido generado por Inteligencia Artificial en 
    # Configuración de seguridad
    JWT_SECRET=tu_clave_secreta_aquí
    JWT_EXPIRATION=24h
+
+   # Configuración de archivos
+   MAX_FILE_SIZE=1000mb
+   UPLOAD_DIR=uploads
+
+   # Configuración de análisis
+   MIN_TEXT_LENGTH=10
+   MAX_TEXT_LENGTH=1000000
    ```
 
 2. Reemplaza los valores de ejemplo con tus propias credenciales:
    - `OPENROUTER_API_KEY`: Obtén una clave API de [OpenRouter](https://openrouter.ai/)
-   - `JWT_SECRET`: Establece una clave secreta para la generación de tokens JWT
+   - `JWT_SECRET`:Deja este valor en predeterminado.
+  
+3. Ve a el archivo `apiConfig.js` ubicado en `src/config`
+-si deseas usar una api de otro porveedor consulta el manual, configura la url de base y escoge el modelo a usar.
 
 ## Ejecución
 
@@ -60,12 +71,6 @@ npm run dev
 
 ```
 node src/server.js
-```
-
-O alternativamente:
-
-```
-npm start
 ```
 
 Una vez iniciado, el servidor estará disponible en `http://localhost:3000` (o el puerto que hayas configurado en el archivo .env).
