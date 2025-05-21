@@ -2,8 +2,8 @@
 module.exports = {
     users: [
         {
-            username: 'Administradordelsistema',
-            password: '573343465085',
+            username: '',
+            password: '',
             role: 'admin',
             active: true
         },
