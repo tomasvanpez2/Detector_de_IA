@@ -77,9 +77,9 @@ router.post('/', verifyToken, isAdmin, (req, res) => {
 });
 
 // Actualizar un usuario existente (solo administradores)
-router.put('/:username', verifyToken, isAdmin, (req, res) => {
+router.put('/:id', verifyToken, isAdmin, (req, res) => {
     try {
-        const { username } = req.params;
+        const { id } = req.params;
         const { password, role, active } = req.body;
         
         const updatedData = {};
@@ -87,7 +87,7 @@ router.put('/:username', verifyToken, isAdmin, (req, res) => {
         if (role) updatedData.role = role;
         if (active !== undefined) updatedData.active = active;
         
-        const result = userConfig.updateUser(username, updatedData);
+        const result = userConfig.updateUser(id, updatedData);
         
         if (!result.success) {
             return res.status(404).json(result);
@@ -104,19 +104,14 @@ router.put('/:username', verifyToken, isAdmin, (req, res) => {
 });
 
 // Eliminar un usuario (solo administradores)
-router.delete('/:username', verifyToken, isAdmin, (req, res) => {
+router.delete('/:id', verifyToken, isAdmin, (req, res) => {
     try {
-        const { username } = req.params;
+        const { id } = req.params;
         
-        // Evitar que se elimine el usuario administrador principal
-        if (username === 'Administradordelsistema') {
-            return res.status(403).json({
-                success: false,
-                message: 'No se puede eliminar el administrador principal'
-            });
-        }
-        
-        const result = userConfig.deleteUser(username);
+        // Opcional: Proteger al usuario administrador principal por su ID si es necesario
+        // Esto requeriría conocer su ID o tener una forma de identificarlo
+
+        const result = userConfig.deleteUser(id);
         
         if (!result.success) {
             return res.status(404).json(result);

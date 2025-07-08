@@ -3,11 +3,11 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: #FFFFFF; /* Fondo blanco */
+    background: linear-gradient(to bottom, #f0f0f0, #ffffff);
 }
 
 .login-box {
-    background-color: #ffffff; /* Blanco */
+    background-color: #ffffff; 
     padding: 2rem;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Sombra más sutil */
@@ -46,7 +46,8 @@
 }
 
 .form-group input {
-    width: 100%;
+    width: calc(100% - 2rem);
+     margin: 0 1rem;
     padding: 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -66,7 +67,7 @@
 .login-button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #2c3e50; /* Azul oscuro */
+    background-color: #000000; /* Negro */
     color: #ffffff; /* Texto blanco para contraste */
     border: none;
     border-radius: 4px;
@@ -78,7 +79,25 @@
 }
 
 .login-button:hover {
-    background-color: #3a546e; /* Azul más claro al pasar el cursor */
+    background-color: #333333; /* Gris oscuro al pasar el cursor */
+}
+
+.toggle-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.toggle-button:hover {
+    background-color: #333333;
 }
 
 .error-message {

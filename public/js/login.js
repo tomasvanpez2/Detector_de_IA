@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
     const errorMessage = document.getElementById('error-message');
 
     loginForm.addEventListener('submit', function(e) {
@@ -33,9 +34,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem('username', username);
                 
                 // Redireccionar al dashboard
-                window.location.href = '/dashboard.html';
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                    window.location.href = '/selector.html'; // Redirigir a la nueva página de selección
+                } else {
+                    errorMessage.textContent = data.message;
+                }
             } else {
                 errorMessage.textContent = data.message || 'Credenciales inválidas';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorMessage.textContent = 'Error al conectar con el servidor';
+        });
+    });
+
+    signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const username = document.getElementById('signupUsername').value;
+        const password = document.getElementById('signupPassword').value;
+        
+        if (!username || !password) {
+            errorMessage.textContent = 'Por favor, ingrese un nuevo usuario y contraseña';
+            return;
+        }
+        
+        fetch('/api/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
+                window.location.reload();
+            } else {
+                errorMessage.textContent = data.message || 'Error en el registro';
             }
         })
         .catch(error => {

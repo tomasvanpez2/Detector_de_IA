@@ -21,8 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     // Verificar si el usuario está autenticado
-    const authToken = localStorage.getItem('authToken');
+    const authToken = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
+    const selectedCourseName = localStorage.getItem('selectedCourseName');
+    const selectedStudentName = localStorage.getItem('selectedStudentName');
+
     // Eliminar la verificación de acceso directo para evitar doble inicio de sesión
     
     // Verificar si el token existe y es válido
@@ -32,6 +35,29 @@ document.addEventListener('DOMContentLoaded', function() {
         // Redirigir al login
         window.location.href = '/index.html';
         return;
+    }
+    
+    const welcomeSection = document.querySelector('.welcome-section h2');
+    if (welcomeSection && selectedStudentName && selectedCourseName) {
+        welcomeSection.textContent = `Bienvenido al dashboard de ${selectedStudentName} del curso ${selectedCourseName}`;
+
+        // Rellenar los campos del formulario
+        const studentNameInput = document.getElementById('student-name');
+        const studentGradeInput = document.getElementById('student-grade');
+
+        if (studentNameInput) {
+            studentNameInput.value = selectedStudentName;
+        }
+        if (studentGradeInput) {
+            studentGradeInput.value = selectedCourseName;
+        }
+        
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Cambiar Estudiante/Curso';
+        backButton.className = 'btn btn-secondary';
+        backButton.style.marginLeft = '20px';
+        backButton.onclick = () => window.location.href = '/selector.html';
+        welcomeSection.parentNode.insertBefore(backButton, welcomeSection.nextSibling);
     }
     
     // Mejorar la experiencia del input de archivo
@@ -75,9 +101,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (logoutButton) {
         logoutButton.addEventListener('click', function() {
             // Eliminar datos de autenticación
-            localStorage.removeItem('authToken');
+            localStorage.removeItem('token');
             localStorage.removeItem('userRole');
             localStorage.removeItem('username');
+            localStorage.removeItem('selectedCourse');
+            localStorage.removeItem('selectedSubject');
+            localStorage.removeItem('selectedStudent');
+            localStorage.removeItem('selectedStudentName');
+            localStorage.removeItem('selectedCourseName');
+            localStorage.removeItem('selectedSubjectName');
             // Redirigir al login
             window.location.href = '/index.html';
         });
@@ -177,6 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Configurar modal de usuario
         addUserBtn.addEventListener('click', () => {
+            // Comprobar el número de usuarios antes de abrir el modal
+            if (usersTableBody.rows.length >= 3) {
+                alert('Se ha alcanzado el límite de 3 usuarios.');
+                return;
+            }
             userModal.style.display = 'block';
             userForm.reset();
             userForm.dataset.mode = 'create';
@@ -188,14 +225,29 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(userForm);
             const userData = {
                 username: formData.get('username'),
-                password: formData.get('password'),
                 role: formData.get('role'),
                 active: formData.get('active') === 'true'
             };
 
+            const password = formData.get('password');
+            if (password) {
+                userData.password = password;
+            }
+
+            const mode = userForm.dataset.mode;
+            const userId = userForm.dataset.userId;
+            
+            let url = '/api/users';
+            let method = 'POST';
+
+            if (mode === 'edit') {
+                url = `/api/users/${userId}`;
+                method = 'PUT';
+            }
+
             try {
-                const response = await fetch('/api/users', {
-                    method: userForm.dataset.mode === 'create' ? 'POST' : 'PUT',
+                const response = await fetch(url, {
+                    method: method,
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${authToken}`
@@ -217,16 +269,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    let users = []; // Declarar users en un ámbito más alto
+
     function loadUsers() {
         const usersTableBody = document.getElementById('users-table-body');
-        
+        const addUserBtn = document.getElementById('add-user-btn');
+
         fetch('/api/users', {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         })
         .then(response => response.json())
-        .then(users => {
+        .then(data => {
+            users = data; // Asignar los datos a la variable users
             usersTableBody.innerHTML = '';
             users.forEach(user => {
                 const row = document.createElement('tr');
@@ -235,12 +291,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     <td>${user.role}</td>
                     <td>${user.active ? 'Activo' : 'Inactivo'}</td>
                     <td class="user-actions">
-                        <button class="btn-edit" onclick="editUser('${user.username}')">Editar</button>
-                        <button class="btn-delete" onclick="deleteUser('${user.username}')">Eliminar</button>
+                        <button class="btn-edit" onclick="editUser('${user.id}')">Editar</button>
+                        <button class="btn-delete" onclick="deleteUser('${user.id}')">Eliminar</button>
                     </td>
                 `;
                 usersTableBody.appendChild(row);
             });
+
+            // Desactivar el botón de añadir si se ha alcanzado el límite
+            if (users.length >= 3) {
+                addUserBtn.disabled = true;
+                addUserBtn.title = 'Límite de usuarios alcanzado';
+            } else {
+                addUserBtn.disabled = false;
+                addUserBtn.title = '';
+            }
         })
         .catch(error => {
             console.error('Error:', error);
@@ -248,47 +313,48 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function editUser(username) {
-        fetch(`/api/users/${username}`, {
+    function editUser(userId) {
+        const user = users.find(u => u.id === userId);
+        if (!user) return;
+
+        const userModal = document.getElementById('user-modal');
+        const userForm = document.getElementById('user-form');
+        document.getElementById('modal-title').innerText = 'Editar Usuario';
+        document.getElementById('modal-title').innerText = 'Editar Usuario';
+        document.getElementById('username').value = user.username;
+        // La contraseña no se debe pre-rellenar por seguridad
+        document.getElementById('password').value = ''; 
+        document.getElementById('password').placeholder = 'Dejar en blanco para no cambiar';
+        document.getElementById('role').value = user.role;
+        document.getElementById('active').value = user.active;
+
+        userForm.dataset.mode = 'edit';
+        userForm.dataset.userId = userId;
+        userModal.style.display = 'block';
+    }
+
+    function deleteUser(userId) {
+        if (!confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+            return;
+        }
+
+        fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         })
-        .then(response => response.json())
-        .then(user => {
-            const userForm = document.getElementById('user-form');
-            userForm.username.value = user.username;
-            userForm.role.value = user.role;
-            userForm.active.value = user.active.toString();
-            userForm.dataset.mode = 'edit';
-            document.getElementById('user-modal').style.display = 'block';
+        .then(response => {
+            if (response.ok) {
+                loadUsers();
+            } else {
+                alert('Error al eliminar usuario');
+            }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al cargar datos del usuario');
+            alert('Error al conectar con el servidor');
         });
-    }
-
-    function deleteUser(username) {
-        if (confirm(`¿Está seguro de eliminar al usuario ${username}?`)) {
-            fetch(`/api/users/${username}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    loadUsers();
-                } else {
-                    alert('Error al eliminar usuario');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al conectar con el servidor');
-            });
-        }
     }
 
     function closeUserModal() {
