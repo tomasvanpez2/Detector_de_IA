@@ -56,25 +56,6 @@ Sistema para la detección de contenido generado por Inteligencia Artificial en 
    - `OPENROUTER_API_KEY`: Obtén una clave API de [OpenRouter](https://openrouter.ai/)
    - `JWT_SECRET`:Deja este valor en predeterminado.
   
-3. Ve a el archivo `apiConfig.js` ubicado en `src/config`
--si deseas usar una api de otro porveedor consulta el manual, configura la url de base y escoge el modelo a usar.
-
-4. ve a la raiz del proyecto y busca el archivo `users.config.js` y asigna un usuario. Esto es lo que vas a encontrar:
-
-```
-// Configuración de usuarios para el sistema de detección de IA
-module.exports = {
-    users: [
-        {
-            username: '',
-            password: '',
-            role: 'admin',
-            active: true
-        },
-    ],
-
-```
-Configura tu usuario y tu contraseña. Recuerdala la necesitaras para utilizar el servicio.
 
 ## Ejecución
 
