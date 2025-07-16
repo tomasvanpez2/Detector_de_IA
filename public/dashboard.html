@@ -34,13 +34,26 @@
                 <h3>Subir Documento para Análisis</h3>
                 <form id="upload-form">
                     <div class="form-group">
+                        <label for="upload-option">Seleccione una opción:</label>
+                        <select id="upload-option" name="uploadOption">
+                            <option value="file">Subir archivo</option>
+                            <option value="text">Pegar texto</option>
+                        </select>
+                    </div>
+
+                    <div id="file-upload-section" class="form-group">
                         <label for="document-upload">Seleccione un archivo:</label>
                         <div class="custom-file-input">
                             <input type="file" id="document-upload" name="document" accept=".txt,.docx,.pptx,.xlsx">
                             <label for="document-upload" class="custom-file-label">Seleccionar archivo</label>
                         </div>
                     </div>
-                    
+
+                    <div id="text-upload-section" class="form-group" style="display: none;">
+                        <label for="text-input">Pegue el texto aquí:</label>
+                        <textarea id="text-input" name="textInput" rows="6" placeholder="Pegue el texto para analizar..."></textarea>
+                    </div>
+
                     <h4>Información Académica del Estudiante</h4>
                     <div class="academic-info">
                         <div class="form-group">
@@ -156,5 +169,19 @@
     <script src="/js/dashboard.js"></script>
     <script src="/js/fileUpload.js"></script>
     <script src="/js/displayAnalysisResults.js"></script>
+    <script>
+        document.getElementById('upload-option').addEventListener('change', function() {
+            const fileSection = document.getElementById('file-upload-section');
+            const textSection = document.getElementById('text-upload-section');
+
+            if (this.value === 'file') {
+                fileSection.style.display = 'block';
+                textSection.style.display = 'none';
+            } else {
+                fileSection.style.display = 'none';
+                textSection.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 </html>
