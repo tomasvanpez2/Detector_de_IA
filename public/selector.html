@@ -16,10 +16,20 @@
                         <!-- Opciones de cursos se cargarán dinámicamente -->
                     </select>
                 </div>
-
+                <div class="form-group" id="subject-select-group" style="display:none;">
+                    <label for="subject-select">Seleccione una Materia:</label>
+                    <select id="subject-select" name="subject">
+                        <!-- Opciones de materias se cargarán dinámicamente -->
+                    </select>
+                </div>
+                <!-- Campo de horas totales del curso, alineado y con mismo estilo que la materia -->
+                <div class="form-group" id="course-hours-group" style="display: none; margin-bottom: 16px;">
+                    <label for="course-hours">Horas totales del curso:</label>
+                    <input type="number" id="course-hours" name="course-hours" min="1" placeholder="Ingrese las horas totales" style="width: 100%; height: 38px; font-size: 16px; box-sizing: border-box;">
+                </div>
                 <!-- Sección de gestión de temas -->
                 <div id="topic-management" style="display: none; margin-bottom: 24px;">
-                    <h3>Temas trabajados con el curso</h3>
+                    <h3>Temas trabajados en la materia</h3>
                     <ul id="topic-list" style="margin-bottom: 12px;"></ul>
                     <div style="display: flex; gap: 10px;">
                         <button id="add-topic-btn" class="btn btn-secondary" type="button">Agregar Tema</button>
@@ -27,8 +37,6 @@
                         <button id="proceed-to-student-btn" class="btn btn-primary" type="button">Proceder a la selección del estudiante</button>
                     </div>
                 </div>
-
-
 
                 <div id="student-management" style="display: none;">
                     <h3>Gestión de Estudiantes</h3>

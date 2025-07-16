@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const courseSelect = document.getElementById('course-select');
+    const subjectSelectGroup = document.getElementById('subject-select-group');
+    const subjectSelect = document.getElementById('subject-select');
     const studentManagementSection = document.getElementById('student-management');
     const studentSelect = document.getElementById('student-select');
     const addStudentBtn = document.getElementById('add-student-btn');
@@ -19,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTopicBtn = document.getElementById('add-topic-btn');
     const deleteTopicBtn = document.getElementById('delete-topic-btn');
     const proceedToStudentBtn = document.getElementById('proceed-to-student-btn');
+    const courseHoursGroup = document.getElementById('course-hours-group');
+    const courseHoursInput = document.getElementById('course-hours');
 
     let topics = [];
     let selectedTopicIndex = null;
@@ -33,40 +37,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Lógica para cargar cursos (grados)
     function loadCourses() {
-        const grados = [
-            ...Array.from({ length: 11 }, (_, i) => ({ id: `${i + 1}`, name: `Grado ${i + 1}` })),
-            { id: 'universitario', name: 'Universitario' }
-        ];
-
-        courseSelect.innerHTML = '<option value="" disabled selected>Seleccione un grado</option>';
-        grados.forEach(grado => {
-            const option = document.createElement('option');
-            option.value = grado.id;
-            option.textContent = grado.name;
-            courseSelect.appendChild(option);
-        });
+        fetch('/courses.json')
+            .then(res => res.json())
+            .then(data => {
+                courseSelect.innerHTML = '<option value="" disabled selected>Seleccione un grado</option>';
+                Object.keys(data).forEach(curso => {
+                    const option = document.createElement('option');
+                    option.value = curso;
+                    option.textContent = curso;
+                    courseSelect.appendChild(option);
+                });
+            });
     }
 
     // Mostrar la sección de temas al seleccionar curso y cargar temas desde backend
     courseSelect.addEventListener('change', () => {
         if (courseSelect.value) {
-            topicManagementSection.style.display = 'block';
-            studentManagementSection.style.display = 'none';
-            topics = [];
-            selectedTopicIndex = null;
-            // Obtener temas desde backend
-            fetch(`/api/themes/${courseSelect.value}`)
+            // Mostrar selector de materia
+            fetch('/courses.json')
                 .then(res => res.json())
                 .then(data => {
-                    topics = Array.isArray(data) ? data : [];
-                    renderTopics();
-                })
-                .catch(() => {
-                    topics = [];
-                    renderTopics();
+                    const materias = Object.keys(data[courseSelect.value] || {});
+                    subjectSelect.innerHTML = '<option value="" disabled selected>Seleccione una materia</option>';
+                    materias.forEach(materia => {
+                        const option = document.createElement('option');
+                        option.value = materia;
+                        option.textContent = materia;
+                        subjectSelect.appendChild(option);
+                    });
+                    subjectSelectGroup.style.display = 'block';
+                    topicManagementSection.style.display = 'none';
+                    studentManagementSection.style.display = 'none';
                 });
         } else {
+            subjectSelectGroup.style.display = 'none';
             topicManagementSection.style.display = 'none';
+            studentManagementSection.style.display = 'none';
+        }
+    });
+
+    // Guardar el valor de horas totales por materia y grado en localStorage cuando se edite
+    courseHoursInput.addEventListener('input', () => {
+        if (courseSelect.value && subjectSelect.value && courseHoursInput.value && parseInt(courseHoursInput.value) > 0) {
+            const key = `courseHours_${courseSelect.value}_${subjectSelect.value}`;
+            localStorage.setItem(key, courseHoursInput.value);
+        }
+    });
+
+    subjectSelect.addEventListener('change', () => {
+        if (subjectSelect.value) {
+            topicManagementSection.style.display = 'block';
+            courseHoursGroup.style.display = 'block';
+            studentManagementSection.style.display = 'none';
+            // Restaurar el valor guardado para la materia y grado seleccionados
+            const key = `courseHours_${courseSelect.value}_${subjectSelect.value}`;
+            const savedHours = localStorage.getItem(key);
+            if (savedHours) {
+                courseHoursInput.value = savedHours;
+            } else {
+                courseHoursInput.value = '';
+            }
+        } else {
+            topicManagementSection.style.display = 'none';
+            courseHoursGroup.style.display = 'none';
             studentManagementSection.style.display = 'none';
         }
     });
@@ -91,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addTopicBtn.addEventListener('click', () => {
         const tema = prompt('Ingrese el nombre del tema trabajado:');
         if (tema && tema.trim()) {
-            fetch(`/api/themes/${courseSelect.value}`, {
+            fetch(`/api/themes/${courseSelect.value}/${subjectSelect.value}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic: tema.trim() })
@@ -113,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteTopicBtn.addEventListener('click', () => {
         if (selectedTopicIndex !== null && topics[selectedTopicIndex] !== undefined) {
             if (confirm(`¿Eliminar el tema "${topics[selectedTopicIndex]}"?`)) {
-                fetch(`/api/themes/${courseSelect.value}`, {
+                fetch(`/api/themes/${courseSelect.value}/${subjectSelect.value}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ topic: topics[selectedTopicIndex] })
@@ -141,9 +174,20 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Agregue al menos un tema antes de continuar.');
             return;
         }
+        if (!courseHoursInput.value || parseInt(courseHoursInput.value) < 1) {
+            alert('Ingrese las horas totales del curso antes de continuar.');
+            return;
+        }
+        // Guardar el valor actual por materia y grado antes de continuar
+        const key = `courseHours_${courseSelect.value}_${subjectSelect.value}`;
+        localStorage.setItem(key, courseHoursInput.value);
+        localStorage.setItem('selectedCourseHours', courseHoursInput.value); // Para compatibilidad con otros módulos
         // Guardar los temas en localStorage (opcional, para usarlos después)
         localStorage.setItem('selectedCourseTopics', JSON.stringify(topics));
+        localStorage.setItem('selectedSubject', subjectSelect.value);
+        localStorage.setItem('selectedSubjectName', subjectSelect.options[subjectSelect.selectedIndex].text);
         topicManagementSection.style.display = 'none';
+        courseHoursGroup.style.display = 'none';
         loadStudents(courseSelect.value);
     });
 
@@ -257,14 +301,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     continueToDashboardBtn.addEventListener('click', () => {
         const courseId = courseSelect.value;
-
+        const subjectId = subjectSelect.value;
         const studentId = studentSelect.value;
-        if (courseId && studentId) {
+        if (courseId && subjectId && studentId) {
             // Guardar en localStorage y redirigir
             localStorage.setItem('selectedCourse', courseId);
+            localStorage.setItem('selectedSubject', subjectId);
             localStorage.setItem('selectedStudent', studentId);
             localStorage.setItem('selectedStudentName', studentSelect.options[studentSelect.selectedIndex].text);
             localStorage.setItem('selectedCourseName', courseSelect.options[courseSelect.selectedIndex].text);
+            localStorage.setItem('selectedSubjectName', subjectSelect.options[subjectSelect.selectedIndex].text);
             window.location.href = '/dashboard.html';
         }
     });

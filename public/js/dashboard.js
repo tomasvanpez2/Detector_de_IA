@@ -143,8 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Cargar temas del curso seleccionado
     function loadCourseTopics() {
         const courseId = localStorage.getItem('selectedCourse');
-        if (!courseId) return;
-        fetch(`/api/themes/${courseId}`)
+        const subjectId = localStorage.getItem('selectedSubject');
+        if (!courseId || !subjectId) return;
+        fetch(`/api/themes/${courseId}/${subjectId}`)
             .then(res => res.json())
             .then(data => {
                 topicsContainer.innerHTML = '';

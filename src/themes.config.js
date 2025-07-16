@@ -1,7 +1,14 @@
 module.exports = {
-  "7": [
-    "Tabla Periodica",
-    "Mezclas",
-    "Python Basico - Tipos de datos"
-  ]
+  "7": [],
+  "Grado 7º": {
+    "Cosmos": [
+      "Tabla Periodica"
+    ]
+  },
+  "Grado 5º": {
+    "Cosmos": [
+      "A",
+      "Tabla"
+    ]
+  }
 };
