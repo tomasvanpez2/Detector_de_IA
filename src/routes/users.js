@@ -44,37 +44,10 @@ router.get('/:username', verifyToken, isAdmin, (req, res) => {
 });
 
 // Crear un nuevo usuario (solo administradores)
-router.post('/', verifyToken, isAdmin, (req, res) => {
-    try {
-        const { username, password, role, active } = req.body;
-        
-        if (!username || !password || !role) {
-            return res.status(400).json({
-                success: false,
-                message: 'Datos incompletos'
-            });
-        }
-        
-        const result = userConfig.addUser({
-            username,
-            password,
-            role,
-            active: active !== undefined ? active : true
-        });
-        
-        if (!result.success) {
-            return res.status(400).json(result);
-        }
-        
-        res.status(201).json(result);
-    } catch (error) {
-        console.error('Error al crear usuario:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error al crear usuario'
-        });
-    }
-});
+const authController = require('../controllers/authController');
+
+// Crear un nuevo usuario (solo administradores)
+router.post('/', verifyToken, isAdmin, authController.register);
 
 // Actualizar un usuario existente (solo administradores)
 router.put('/:id', verifyToken, isAdmin, (req, res) => {

@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth');
 const analysisRoutes = require('./routes/analysis');
 const usersRoutes = require('./routes/users');
 const studentRoutes = require('./routes/students');
+const themesRoutes = require('./routes/themes');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -47,6 +48,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/analysis', analysisRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/themes', themesRoutes);
 
 // Ruta principal
 app.get('/', (req, res) => {

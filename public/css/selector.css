@@ -1,3 +1,66 @@
+#student-name {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #bbb;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    background: #f8f8f8;
+    margin-bottom: 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    display: block;
+}
+/* --- Mejoras visuales para el modal de agregar estudiante --- */
+#student-modal-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #222;
+    letter-spacing: 0.5px;
+}
+
+.modal-content {
+    padding: 32px 28px 28px 28px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#student-form {
+    padding: 0;
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.form-group label {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+#student-name {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #bbb;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    background: #f8f8f8;
+    margin-bottom: 0.5rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+#student-name:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.08);
+    outline: none;
+}
 body {
     background: linear-gradient(to bottom, #f0f0f0, #ffffff);
     display: flex;

@@ -6,26 +6,34 @@ const path = require('path');
 
 const usersFilePath = path.join(__dirname, 'users.json');
 
-// Función para cargar usuarios desde el archivo JSON
+// Función para cargar usuarios desde las variables de entorno (.env)
 function loadUsers() {
-    if (fs.existsSync(usersFilePath)) {
-        try {
-            const data = fs.readFileSync(usersFilePath, 'utf8');
-            return JSON.parse(data);
-        } catch (error) {
-            console.error('Error al cargar users.json:', error);
-        }
-    }
-    // Si el archivo no existe o hay un error, inicializa con el admin
-    return [
-        {
-            id: uuidv4(),
+    const users = [];
+    // Admin principal
+    if (process.env.APP_USERNAME && process.env.APP_PASSWORD) {
+        users.push({
+            id: 'admin',
             username: process.env.APP_USERNAME,
             password: process.env.APP_PASSWORD,
             role: 'admin',
             active: true
+        });
+    }
+    // Usuarios normales (hasta 5 slots)
+    for (let i = 1; i <= 5; i++) {
+        const user = process.env[`APP_USERNAME${i}`];
+        const pass = process.env[`APP_PASSWORD${i}`];
+        if (user && pass) {
+            users.push({
+                id: `user${i}`,
+                username: user,
+                password: pass,
+                role: 'user',
+                active: true
+            });
         }
-    ];
+    }
+    return users;
 }
 
 // Función para guardar usuarios en el archivo JSON
@@ -71,32 +79,9 @@ module.exports = {
     },
     
     // Función para agregar un nuevo usuario
-    addUser: function(newUser) {
-        const users = loadUsers();
-        if (users.length >= 4) {
-            return { success: false, message: 'Se ha alcanzado el límite de 4 usuarios' };
-        }
-
-        if (!newUser.username || !newUser.password || !newUser.role) {
-            return { success: false, message: 'Datos de usuario incompletos' };
-        }
-        
-        // Verificar si el usuario ya existe
-        if (this.getUserInfo(newUser.username)) {
-            return { success: false, message: 'El usuario ya existe' };
-        }
-        
-        // Agregar el nuevo usuario
-        users.push({
-            id: uuidv4(), // Asignar un ID único
-            username: newUser.username,
-            password: newUser.password,
-            role: newUser.role,
-            active: newUser.active !== undefined ? newUser.active : true
-        });
-        
-        saveUsers(users);
-        return { success: true, message: 'Usuario agregado correctamente' };
+    // addUser ya no se usa, la lógica de agregar usuario está en el controlador y .env
+    addUser: function() {
+        return { success: false, message: 'No implementado: los usuarios se agregan solo en el .env' };
     },
     
     // Función para actualizar un usuario existente
@@ -117,22 +102,33 @@ module.exports = {
         return { success: true, message: 'Usuario actualizado correctamente' };
     },
     
-    // Función para eliminar un usuario
+    // Función para eliminar un usuario del .env
     deleteUser: function(userId) {
-        let users = loadUsers();
-        const userIndex = users.findIndex(u => u.id === userId);
-        if (userIndex === -1) {
+        // Proteger el admin principal
+        if (userId === 'admin') {
+            return { success: false, message: 'No se puede eliminar el usuario principal (admin)' };
+        }
+        // Buscar el slot correspondiente
+        const envPath = path.resolve(__dirname, '.env');
+        let envContent = fs.readFileSync(envPath, 'utf8');
+        let found = false;
+        for (let i = 1; i <= 5; i++) {
+            if (userId === `user${i}`) {
+                // Vaciar las variables
+                envContent = envContent.replace(new RegExp(`^APP_USERNAME${i}=.*$`, 'm'), `APP_USERNAME${i}=`);
+                envContent = envContent.replace(new RegExp(`^APP_PASSWORD${i}=.*$`, 'm'), `APP_PASSWORD${i}=`);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
             return { success: false, message: 'Usuario no encontrado' };
         }
-        
-        // Eliminar el usuario
-        users.splice(userIndex, 1);
-        
-        saveUsers(users);
+        fs.writeFileSync(envPath, envContent);
         return { success: true, message: 'Usuario eliminado correctamente' };
     },
     
-    // Función para obtener todos los usuarios
+    // Función para obtener todos los usuarios válidos del .env
     getAllUsers: function() {
         const users = loadUsers();
         return users.map(user => ({

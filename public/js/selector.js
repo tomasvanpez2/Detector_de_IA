@@ -13,6 +13,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const studentNameInput = document.getElementById('student-name');
     const studentIdInput = document.getElementById('student-id');
 
+    // Elementos para gestión de temas
+    const topicManagementSection = document.getElementById('topic-management');
+    const topicList = document.getElementById('topic-list');
+    const addTopicBtn = document.getElementById('add-topic-btn');
+    const deleteTopicBtn = document.getElementById('delete-topic-btn');
+    const proceedToStudentBtn = document.getElementById('proceed-to-student-btn');
+
+    let topics = [];
+    let selectedTopicIndex = null;
+
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -36,6 +46,106 @@ document.addEventListener('DOMContentLoaded', () => {
             courseSelect.appendChild(option);
         });
     }
+
+    // Mostrar la sección de temas al seleccionar curso y cargar temas desde backend
+    courseSelect.addEventListener('change', () => {
+        if (courseSelect.value) {
+            topicManagementSection.style.display = 'block';
+            studentManagementSection.style.display = 'none';
+            topics = [];
+            selectedTopicIndex = null;
+            // Obtener temas desde backend
+            fetch(`/api/themes/${courseSelect.value}`)
+                .then(res => res.json())
+                .then(data => {
+                    topics = Array.isArray(data) ? data : [];
+                    renderTopics();
+                })
+                .catch(() => {
+                    topics = [];
+                    renderTopics();
+                });
+        } else {
+            topicManagementSection.style.display = 'none';
+            studentManagementSection.style.display = 'none';
+        }
+    });
+
+    // Renderizar la lista de temas
+    function renderTopics() {
+        topicList.innerHTML = '';
+        topics.forEach((topic, idx) => {
+            const li = document.createElement('li');
+            li.textContent = topic;
+            li.style.cursor = 'pointer';
+            li.style.background = idx === selectedTopicIndex ? '#e0e0e0' : 'transparent';
+            li.onclick = () => {
+                selectedTopicIndex = idx;
+                renderTopics();
+            };
+            topicList.appendChild(li);
+        });
+    }
+
+    // Agregar tema (persistente)
+    addTopicBtn.addEventListener('click', () => {
+        const tema = prompt('Ingrese el nombre del tema trabajado:');
+        if (tema && tema.trim()) {
+            fetch(`/api/themes/${courseSelect.value}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: tema.trim() })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    topics = data.topics;
+                    renderTopics();
+                } else {
+                    alert('No se pudo agregar el tema.');
+                }
+            })
+            .catch(() => alert('Error al agregar tema.'));
+        }
+    });
+
+    // Eliminar tema seleccionado (persistente)
+    deleteTopicBtn.addEventListener('click', () => {
+        if (selectedTopicIndex !== null && topics[selectedTopicIndex] !== undefined) {
+            if (confirm(`¿Eliminar el tema "${topics[selectedTopicIndex]}"?`)) {
+                fetch(`/api/themes/${courseSelect.value}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic: topics[selectedTopicIndex] })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        topics = data.topics;
+                        selectedTopicIndex = null;
+                        renderTopics();
+                    } else {
+                        alert('No se pudo eliminar el tema.');
+                    }
+                })
+                .catch(() => alert('Error al eliminar tema.'));
+            }
+        } else {
+            alert('Seleccione un tema para eliminar.');
+        }
+    });
+
+    // Proceder a la selección del estudiante
+    proceedToStudentBtn.addEventListener('click', () => {
+        if (topics.length === 0) {
+            alert('Agregue al menos un tema antes de continuar.');
+            return;
+        }
+        // Guardar los temas en localStorage (opcional, para usarlos después)
+        localStorage.setItem('selectedCourseTopics', JSON.stringify(topics));
+        topicManagementSection.style.display = 'none';
+        loadStudents(courseSelect.value);
+    });
 
 
 
@@ -62,13 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error('Error al cargar estudiantes:', error));
     }
 
-    courseSelect.addEventListener('change', () => {
-        if (courseSelect.value) {
-            loadStudents(courseSelect.value);
-        } else {
-            studentManagementSection.style.display = 'none';
-        }
-    });
 
     studentSelect.addEventListener('change', () => {
         const studentSelected = !!studentSelect.value;

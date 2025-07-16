@@ -41,7 +41,6 @@ const authController = {
     register: async (req, res) => {
         try {
             const { username, password } = req.body;
-
             if (!username || !password) {
                 return res.status(400).json({
                     success: false,
@@ -49,22 +48,49 @@ const authController = {
                 });
             }
 
-            // Verificamos si el usuario ya existe
-            const existingUser = userConfig.validateCredentials(username, password);
-            if (existingUser) {
+            // No permitir registrar el admin principal
+            if (username === process.env.APP_USERNAME) {
                 return res.status(400).json({
                     success: false,
-                    message: 'El usuario ya existe'
+                    message: 'No se puede registrar el usuario admin principal'
                 });
             }
 
-            // Agregamos el nuevo usuario
-            const user = userConfig.addUser({
-                username,
-                password,
-                role: 'teacher',
-                active: true
-            });
+            const envPath = path.resolve(__dirname, '../../.env');
+            let envContent = fs.readFileSync(envPath, 'utf8');
+
+            // Buscar slots disponibles
+            let slot = null;
+            for (let i = 1; i <= 2; i++) {
+                const userKey = `APP_USERNAME${i}`;
+                const passKey = `APP_PASSWORD${i}`;
+                const userRegex = new RegExp(`^${userKey}=(.*)$`, 'm');
+                const passRegex = new RegExp(`^${passKey}=(.*)$`, 'm');
+                const userMatch = envContent.match(userRegex);
+                const passMatch = envContent.match(passRegex);
+                if (userMatch && passMatch && (!userMatch[1] && !passMatch[1])) {
+                    slot = i;
+                    break;
+                }
+                // Evitar duplicados
+                if (userMatch && userMatch[1] === username) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'El usuario ya existe'
+                    });
+                }
+            }
+            if (!slot) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'No hay más slots disponibles para usuarios'
+                });
+            }
+
+            // Escribir usuario y contraseña en el slot encontrado
+            envContent = envContent.replace(new RegExp(`^APP_USERNAME${slot}=.*$`, 'm'), `APP_USERNAME${slot}=${username}`);
+            envContent = envContent.replace(new RegExp(`^APP_PASSWORD${slot}=.*$`, 'm'), `APP_PASSWORD${slot}=${password}`);
+            fs.writeFileSync(envPath, envContent);
 
             return res.status(201).json({
                 success: true,
@@ -82,7 +108,6 @@ const authController = {
     login: async (req, res) => {
         try {
             const { username, password } = req.body;
-
             if (!username || !password) {
                 return res.status(400).json({
                     success: false,
@@ -90,20 +115,32 @@ const authController = {
                 });
             }
 
-            if (username !== process.env.APP_USERNAME || password !== process.env.APP_PASSWORD) {
+            let user = null;
+            let role = 'user';
+            if (username === process.env.APP_USERNAME && password === process.env.APP_PASSWORD) {
+                user = { username, role: 'admin' };
+                role = 'admin';
+            } else {
+                // Verificar slots de usuarios
+                for (let i = 1; i <= 2; i++) {
+                    if (
+                        username === process.env[`APP_USERNAME${i}`] &&
+                        password === process.env[`APP_PASSWORD${i}`]
+                    ) {
+                        user = { username, role: 'user' };
+                        break;
+                    }
+                }
+            }
+            if (!user) {
                 return res.status(401).json({
                     success: false,
                     message: 'Credenciales inválidas'
                 });
             }
 
-            const user = {
-                username: process.env.APP_USERNAME,
-                role: 'admin'
-            };
-
             const token = jwt.sign(
-                { 
+                {
                     username: user.username,
                     role: user.role
                 },

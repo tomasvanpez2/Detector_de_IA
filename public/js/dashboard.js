@@ -115,47 +115,51 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Configurar el botón de añadir tema
+    // Configurar el botón de añadir tema y cargar temas del curso
     const addTopicBtn = document.getElementById('add-topic-btn');
     const topicsContainer = document.getElementById('topics-container');
-    
+
+    // Función para crear un input de tema
+    function createTopicInput(value = '') {
+        const topicItem = document.createElement('div');
+        topicItem.className = 'topic-item';
+        const topicInput = document.createElement('input');
+        topicInput.type = 'text';
+        topicInput.name = 'topics[]';
+        topicInput.placeholder = 'Ingrese un tema expuesto en clase';
+        topicInput.value = value;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-topic-btn';
+        removeBtn.textContent = 'X';
+        removeBtn.addEventListener('click', function() {
+            topicsContainer.removeChild(topicItem);
+        });
+        topicItem.appendChild(topicInput);
+        topicItem.appendChild(removeBtn);
+        return topicItem;
+    }
+
+    // Cargar temas del curso seleccionado
+    function loadCourseTopics() {
+        const courseId = localStorage.getItem('selectedCourse');
+        if (!courseId) return;
+        fetch(`/api/themes/${courseId}`)
+            .then(res => res.json())
+            .then(data => {
+                topicsContainer.innerHTML = '';
+                (Array.isArray(data) ? data : []).forEach(topic => {
+                    topicsContainer.appendChild(createTopicInput(topic));
+                });
+            });
+    }
+
     if (addTopicBtn && topicsContainer) {
         addTopicBtn.addEventListener('click', function() {
-            // Crear un nuevo elemento de tema
-            const topicItem = document.createElement('div');
-            topicItem.className = 'topic-item';
-            
-            // Crear el input para el tema
-            const topicInput = document.createElement('input');
-            topicInput.type = 'text';
-            topicInput.name = 'topics[]';
-            topicInput.placeholder = 'Ingrese un tema expuesto en clase';
-            
-            // Crear el botón para eliminar
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'remove-topic-btn';
-            removeBtn.textContent = 'X';
-            
-            // Añadir evento para eliminar el tema
-            removeBtn.addEventListener('click', function() {
-                topicsContainer.removeChild(topicItem);
-            });
-            
-            // Añadir elementos al contenedor
-            topicItem.appendChild(topicInput);
-            topicItem.appendChild(removeBtn);
-            topicsContainer.appendChild(topicItem);
+            topicsContainer.appendChild(createTopicInput(''));
         });
-        
-        // Añadir evento para los botones de eliminar existentes
-        const removeButtons = document.querySelectorAll('.remove-topic-btn');
-        removeButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const topicItem = this.parentElement;
-                topicsContainer.removeChild(topicItem);
-            });
-        });
+        // Cargar los temas al cargar la página
+        loadCourseTopics();
     }
 
     // Configurar el formulario de subida de archivos
