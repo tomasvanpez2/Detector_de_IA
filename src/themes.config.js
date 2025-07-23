@@ -8,7 +8,8 @@ module.exports = {
   "Grado 5º": {
     "Cosmos": [
       "A",
-      "Tabla"
+      "Tabla",
+      "Cosmos y universo"
     ]
   }
 };
