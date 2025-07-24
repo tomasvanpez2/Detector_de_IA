@@ -10,6 +10,7 @@ const analysisRoutes = require('./routes/analysis');
 const usersRoutes = require('./routes/users');
 const studentRoutes = require('./routes/students');
 const themesRoutes = require('./routes/themes');
+const tokenRoutes = require('./routes/tokens');
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -49,6 +50,7 @@ app.use('/api/analysis', analysisRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/students', studentRoutes);
 app.use('/api/themes', themesRoutes);
+app.use('/api/tokens', tokenRoutes);
 
 // Ruta principal
 app.get('/', (req, res) => {

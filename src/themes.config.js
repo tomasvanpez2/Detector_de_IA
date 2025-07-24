@@ -1,15 +1,28 @@
 module.exports = {
   "7": [],
   "Grado 7º": {
-    "Cosmos": [
-      "Tabla Periodica"
-    ]
+    "Cosmos": [],
+    "Matematicas": [],
+    "Sapiens": []
   },
   "Grado 5º": {
+    "Cosmos": [],
+    "Matematicas": [],
+    "Sapiens": [],
+    "Español": []
+  },
+  "Grado 11º": {
+    "Sapiens": [],
+    "Cosmos": []
+  },
+  "Grado 10º": {
     "Cosmos": [
-      "A",
-      "Tabla",
-      "Cosmos y universo"
+      "1"
+    ]
+  },
+  "Grado 8º": {
+    "Cosmos": [
+      "º"
     ]
   }
 };
