@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Configurar modal de usuario
         addUserBtn.addEventListener('click', () => {
             // Comprobar el número de usuarios antes de abrir el modal
-            if (usersTableBody.rows.length >= 3) {
-                alert('Se ha alcanzado el límite de 3 usuarios.');
+            if (usersTableBody.rows.length >= 6) {
+                alert('Se ha alcanzado el límite de 6 usuarios (1 admin + 5 usuarios normales).');
                 return;
             }
             userModal.style.display = 'block';
@@ -304,9 +304,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Desactivar el botón de añadir si se ha alcanzado el límite
-            if (users.length >= 3) {
+            if (users.length >= 6) {
                 addUserBtn.disabled = true;
-                addUserBtn.title = 'Límite de usuarios alcanzado';
+                addUserBtn.title = 'Límite de usuarios alcanzado (máximo 6)';
             } else {
                 addUserBtn.disabled = false;
                 addUserBtn.title = '';

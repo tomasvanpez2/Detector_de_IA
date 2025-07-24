@@ -61,19 +61,21 @@ const authController = {
 
             // Buscar slots disponibles
             let slot = null;
-            for (let i = 1; i <= 2; i++) {
+            for (let i = 1; i <= 5; i++) {
                 const userKey = `APP_USERNAME${i}`;
                 const passKey = `APP_PASSWORD${i}`;
                 const userRegex = new RegExp(`^${userKey}=(.*)$`, 'm');
                 const passRegex = new RegExp(`^${passKey}=(.*)$`, 'm');
                 const userMatch = envContent.match(userRegex);
                 const passMatch = envContent.match(passRegex);
-                if (userMatch && passMatch && (!userMatch[1] && !passMatch[1])) {
+                
+                // Verificar si el slot está vacío (sin valor después del =)
+                if (userMatch && passMatch && (!userMatch[1] || userMatch[1].trim() === '') && (!passMatch[1] || passMatch[1].trim() === '')) {
                     slot = i;
                     break;
                 }
                 // Evitar duplicados
-                if (userMatch && userMatch[1] === username) {
+                if (userMatch && userMatch[1] && userMatch[1].trim() === username) {
                     return res.status(400).json({
                         success: false,
                         message: 'El usuario ya existe'
@@ -83,7 +85,7 @@ const authController = {
             if (!slot) {
                 return res.status(400).json({
                     success: false,
-                    message: 'No hay más slots disponibles para usuarios'
+                    message: 'No hay más slots disponibles para usuarios (máximo 5 usuarios normales)'
                 });
             }
 
@@ -122,10 +124,12 @@ const authController = {
                 role = 'admin';
             } else {
                 // Verificar slots de usuarios
-                for (let i = 1; i <= 2; i++) {
+                for (let i = 1; i <= 5; i++) {
                     if (
                         username === process.env[`APP_USERNAME${i}`] &&
-                        password === process.env[`APP_PASSWORD${i}`]
+                        password === process.env[`APP_PASSWORD${i}`] &&
+                        process.env[`APP_USERNAME${i}`] && 
+                        process.env[`APP_USERNAME${i}`].trim() !== ''
                     ) {
                         user = { username, role: 'user' };
                         break;
