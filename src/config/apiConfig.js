@@ -2,8 +2,8 @@
 module.exports = {
     // Configuración de la API
     api: {
-        baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
-        model: 'models/gemini-2.5-pro',
+        baseUrl: 'https://openrouter.ai/api/v1',
+        model: 'deepseek/deepseek-r1-0528:free',
         maxTokens: 4000,
         temperature: 0.4,
         apiKey: process.env.GEMINI_API_KEY
