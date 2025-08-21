@@ -2,11 +2,11 @@
 module.exports = {
     // Configuración de la API
     api: {
-        baseUrl: 'https://openrouter.ai/api/v1',
-        model: 'qwen/qwen3-235b-a22b:free',
+        baseUrl: 'https://generativelanguage.googleapis.com/v1beta',
+        model: 'models/gemini-2.5-pro',
         maxTokens: 4000,
-        temperature: 0.5,
-        apiKey: process.env.OPENROUTER_API_KEY
+        temperature: 0.4,
+        apiKey: process.env.GEMINI_API_KEY
     },
 
     // Configuración de análisis
