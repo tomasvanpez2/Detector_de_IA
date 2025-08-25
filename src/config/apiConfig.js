@@ -4,7 +4,7 @@ module.exports = {
     api: {
         baseUrl: 'https://openrouter.ai/api/v1',
         model: 'qwen/qwen3-235b-a22b:free',
-        maxTokens: 10000,
+        maxTokens: 4000,
         temperature: 0.5,
         apiKey: process.env.OPENROUTER_API_KEY
     },
