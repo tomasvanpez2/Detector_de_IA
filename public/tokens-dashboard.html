@@ -242,12 +242,19 @@
     </div>
 
     <script>
-        // Obtener token del localStorage
-        const token = localStorage.getItem('token');
+        // Verificar autenticación
+        const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+        const userRole = localStorage.getItem('userRole');
 
         if (!token) {
             alert('No estás autenticado. Redirigiendo al login...');
             window.location.href = '/';
+        }
+
+        // Verificar que el usuario tenga permisos de admin para ver el dashboard de tokens
+        if (userRole !== 'admin') {
+            alert('No tienes permisos para acceder a este dashboard. Solo administradores pueden ver el consumo de tokens.');
+            window.location.href = '/selector.html';
         }
 
         // Configurar headers para las peticiones
