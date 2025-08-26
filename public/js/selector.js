@@ -28,10 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedTopicIndex = null;
 
     const token = localStorage.getItem('token');
+    const userRole = localStorage.getItem('userRole');
 
     if (!token) {
         window.location.href = '/index.html';
         return;
+    }
+
+    // Mostrar botón de administración solo para admins
+    if (userRole === 'admin') {
+        document.getElementById('admin-section').style.display = 'block';
     }
 
 

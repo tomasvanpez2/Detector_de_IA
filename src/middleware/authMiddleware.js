@@ -54,7 +54,29 @@ const checkRole = (roles) => {
     };
 };
 
+/**
+ * Middleware específico para verificar que el usuario sea administrador
+ */
+const verifyAdmin = (req, res, next) => {
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            message: 'Usuario no autenticado'
+        });
+    }
+    
+    if (req.user.role === 'admin') {
+        next();
+    } else {
+        return res.status(403).json({
+            success: false,
+            message: 'Acceso denegado. Se requieren permisos de administrador.'
+        });
+    }
+};
+
 module.exports = {
     verifyToken,
-    checkRole
+    checkRole,
+    verifyAdmin
 };

@@ -1,7 +1,9 @@
 module.exports = {
   "7": [],
   "Grado 7º": {
-    "Cosmos": [],
+    "Cosmos": [
+      "a"
+    ],
     "Matematicas": [],
     "Sapiens": []
   },
@@ -21,8 +23,11 @@ module.exports = {
     ]
   },
   "Grado 8º": {
+    "Cosmos": []
+  },
+  "Grado 9º": {
     "Cosmos": [
-      "º"
+      "a"
     ]
   }
 };

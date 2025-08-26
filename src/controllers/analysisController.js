@@ -27,7 +27,8 @@ const analysisController = {
                 attendanceHours: req.body.attendanceHours || '',
                 totalHours: req.body.totalHours || '',
                 topics: req.body.topics ? JSON.parse(req.body.topics) : [],
-                additionalContext: req.body.context || ''
+                additionalContext: req.body.context || '',
+                documentName: req.file.originalname || req.file.filename
             };
             
             // Analizar el archivo utilizando el servicio de detección
