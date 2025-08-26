@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li');
             li.textContent = topic;
             li.style.cursor = 'pointer';
-            li.style.background = idx === selectedTopicIndex ? '#e0e0e0' : 'transparent';
+            li.style.background = idx === selectedTopicIndex ? 'var(--color-tertiary)' : 'transparent';
             li.onclick = () => {
                 selectedTopicIndex = idx;
                 renderTopics();

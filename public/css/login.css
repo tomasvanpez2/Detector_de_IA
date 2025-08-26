@@ -1,9 +1,12 @@
+/* Importar variables de colores */
+@import url('./variables.css');
+
 .login-container {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(to bottom, #f0f0f0, #ffffff);
+    background: linear-gradient(to bottom, var(--color-tertiary-light), #ffffff);
 }
 
 .login-box {
@@ -60,33 +63,33 @@
 }
 
 .form-group input:focus {
-    border-color: #000000;
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .login-button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #000000; /* Negro */
-    color: #ffffff; /* Texto blanco para contraste */
+    background: var(--gradient-primary);
+    color: #ffffff;
     border: none;
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
-    margin: 0 auto; /* Centrar horizontalmente */
-    display: block; /* Necesario para que margin auto funcione */
+    margin: 0 auto;
+    display: block;
 }
 
 .login-button:hover {
-    background-color: #333333; /* Gris oscuro al pasar el cursor */
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
 }
 
 .toggle-button {
     width: 100%;
     padding: 0.75rem;
-    background-color: #000000;
-    color: #ffffff;
+    background: var(--gradient-secondary);
+    color: var(--color-black);
     border: none;
     border-radius: 4px;
     font-size: 1rem;
@@ -97,7 +100,7 @@
 }
 
 .toggle-button:hover {
-    background-color: #333333;
+    background: linear-gradient(135deg, var(--color-secondary-dark), var(--color-secondary));
 }
 
 .error-message {

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Consumo de Tokens</title>
+    <link rel="stylesheet" href="/css/variables.css">
     <style>
         * {
             margin: 0;
@@ -25,7 +26,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-tertiary) 100%);
             color: white;
             padding: 30px;
             border-radius: 10px;
@@ -51,7 +52,7 @@
         .stat-number {
             font-size: 2.5em;
             font-weight: bold;
-            color: #667eea;
+            color: var(--color-primary);
             margin-bottom: 10px;
         }
 
@@ -69,7 +70,7 @@
         }
 
         .table-header {
-            background: #667eea;
+            background: var(--color-primary);
             color: white;
             padding: 20px;
             font-size: 1.2em;
@@ -100,11 +101,11 @@
 
         .token-count {
             font-weight: bold;
-            color: #667eea;
+            color: var(--color-primary);
         }
 
         .refresh-btn {
-            background: #667eea;
+            background: var(--color-primary);
             color: white;
             border: none;
             padding: 12px 24px;
@@ -116,7 +117,7 @@
         }
 
         .refresh-btn:hover {
-            background: #5a6fd8;
+            background: var(--color-primary-dark);
         }
 
         .loading {

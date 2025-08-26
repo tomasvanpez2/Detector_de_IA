@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - AI Co.</title>
+    <title>Panel de Administración - GLA</title>
     <style>
         * {
             margin: 0;
@@ -14,9 +14,9 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #38348a 0%, #e8e4ff 100%);
             min-height: 100vh;
-            color: #333;
+            color: #2c3e50;
         }
 
         .container {
@@ -39,7 +39,7 @@
         .header h1 {
             font-size: 2.5em;
             margin-bottom: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #38348a, #f1c40f);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -76,26 +76,37 @@
             display: block;
         }
 
-        .ai-icon { color: #e74c3c; }
-        .tokens-icon { color: #3498db; }
-        .users-icon { color: #27ae60; }
-        .settings-icon { color: #f39c12; }
+        .ai-icon {
+            color: #38348a;
+        }
+
+        .tokens-icon {
+            color: #f1c40f;
+        }
+
+        .users-icon {
+            color: #e8e4ff;
+        }
+
+        .settings-icon {
+            color: #38348a;
+        }
 
         .dashboard-title {
             font-size: 1.4em;
             font-weight: bold;
             margin-bottom: 10px;
-            color: #2c3e50;
+            color: #38348a;
         }
 
         .dashboard-description {
-            color: #666;
+            color: #2c3e50;
             line-height: 1.5;
             margin-bottom: 20px;
         }
 
         .dashboard-stats {
-            background: #f8f9fa;
+            background: #e8e4ff;
             padding: 15px;
             border-radius: 8px;
             margin-top: 15px;
@@ -112,13 +123,13 @@
         }
 
         .stat-label {
-            color: #666;
+            color: #2c3e50;
             font-size: 0.9em;
         }
 
         .stat-value {
             font-weight: bold;
-            color: #2c3e50;
+            color: #38348a;
         }
 
         .logout-section {
@@ -127,20 +138,22 @@
         }
 
         .logout-btn {
-            background: rgba(231, 76, 60, 0.9);
-            color: white;
-            border: none;
+            background: white;
+            color: #38348a;
+            border: 2px solid #38348a;
             padding: 12px 30px;
             border-radius: 25px;
             cursor: pointer;
             font-size: 1em;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
             text-decoration: none;
             display: inline-block;
+            font-weight: 500;
         }
 
         .logout-btn:hover {
-            background: rgba(192, 57, 43, 0.9);
+            background: #38348a;
+            color: white;
         }
 
         .back-btn {
@@ -170,7 +183,7 @@
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .header h1 {
                 font-size: 2em;
             }
